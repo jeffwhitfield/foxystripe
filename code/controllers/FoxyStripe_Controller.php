@@ -1,18 +1,18 @@
 <?php
 
 class FoxyStripe_Controller extends Page_Controller {
-	
+
 	const URLSegment = 'foxystripe';
 
 	public function getURLSegment() {
 		return self::URLSegment;
 	}
-	
+
 	static $allowed_actions = array(
 		'index',
         'sso'
 	);
-	
+
 	public function index() {
 	    // handle POST from FoxyCart API transaction
 		if ((isset($_POST["FoxyData"]) OR isset($_POST['FoxySubscriptionData']))) {
@@ -21,16 +21,16 @@ class FoxyStripe_Controller extends Page_Controller {
                 urldecode($_POST["FoxySubscriptionData"]);
 			$FoxyData_decrypted = rc4crypt::decrypt(FoxyCart::getStoreKey(),$FoxyData_encrypted);
 			self::handleDataFeed($FoxyData_encrypted, $FoxyData_decrypted);
-			
+
 			// extend to allow for additional integrations with Datafeed
 			$this->extend('addIntegrations', $FoxyData_encrypted);
-			
+
 			return 'foxy';
-			
+
 		} else {
-			
+
 			return "No FoxyData or FoxySubscriptionData received.";
-			
+
 		}
 	}
 
@@ -193,6 +193,12 @@ class FoxyStripe_Controller extends Page_Controller {
                     // extend OrderDetail parsing, allowing for recording custom fields from FoxyCart
                     $this->extend('handleOrderItem', $decrypted, $product, $OrderDetail);
 
+                    // Update inventory
+                    $ProductPage = DataObject::get_one('ProductPage',array('Code' => $OrderDetail->Code));
+                    $ProductPage->Inventory = $ProductPage->Inventory - $OrderDetail->Quantity;
+                    $ProductPage->write();
+                    $ProductPage->publish("Live", "Stage");
+
                     // write
                     $OrderDetail->write();
 
@@ -224,9 +230,9 @@ class FoxyStripe_Controller extends Page_Controller {
 
         $redirect_complete = 'https://' . FoxyCart::getFoxyCartStoreName() . '.foxycart.com/checkout?fc_auth_token=' . $auth_token .
             '&fcsid=' . $fcsid . '&fc_customer_id=' . $Member->Customer_ID . '&timestamp=' . $timestampNew;
-	
+
 	    $this->redirect($redirect_complete);
 
     }
-	
+
 }
