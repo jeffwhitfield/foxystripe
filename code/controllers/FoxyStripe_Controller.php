@@ -194,7 +194,7 @@ class FoxyStripe_Controller extends Page_Controller {
                     $this->extend('handleOrderItem', $decrypted, $product, $OrderDetail);
 
                     // Update inventory
-                    $ProductPage = DataObject::get_one('ProductPage',array('Code' => $OrderDetail->Code));
+                    $ProductPage = DataObject::get_one('ProductPage',array('Code' => $OrderDetail->product_code));
                     $ProductPage->Inventory = $ProductPage->Inventory - $OrderDetail->Quantity;
                     $ProductPage->write();
                     $ProductPage->publish("Live", "Stage");
