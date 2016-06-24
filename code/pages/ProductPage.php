@@ -18,7 +18,8 @@ class ProductPage extends Page implements PermissionProvider {
 		'ReceiptTitle' => 'HTMLVarchar(255)',
 		'Featured' => 'Boolean',
 		'Available' => 'Boolean',
-		'DiscountTitle' => 'Varchar(50)'
+		'DiscountTitle' => 'Varchar(50)',
+    'Inventory' => 'Int'
 	);
 
 	private static $has_one = array(
@@ -144,6 +145,12 @@ class ProductPage extends Page implements PermissionProvider {
                 ->setDescription(_t(
                     'ProductPage.AvailableDescription',
                     'If unchecked, will remove "Add to Cart" form and instead display "Currently unavailable"'
+                )),
+            NumericField::create('Inventory')
+                ->setTitle(_t('ProductPage.Inventory', 'Inventory'))
+                ->setDescription(_t(
+                    'ProductPage.Inventory',
+                    'Available inventory for this product.'
                 )),
             TextField::create('Code')
                 ->setTitle(_t('ProductPage.Code', 'Product Code'))
@@ -430,19 +437,17 @@ JS
 			$optionsSet->addExtraClass('foxycartOptionsContainer');
 			$fields->push($optionsSet);
 
-			$quantityMax = ($config->MaxQuantity) ? $config->MaxQuantity : 10;
-			$count = 1;
-			$quantity = array();
-			while ($count <= $quantityMax) {
-				$countVal = ProductPage::getGeneratedValue($data->Code, 'quantity', $count, 'value');
-				$quantity[$countVal] = $count;
-				$count++;
-			}
-
-			$fields->push(DropdownField::create('quantity', 'Quantity', $quantity));
-
-			$fields->push(HeaderField::create('submitPrice', '$' . $data->Price, 4));
-
+      if($config->ShowMaxQuantity){
+  			$quantityMax = ($config->MaxQuantity) ? $config->MaxQuantity : 10;
+  			$count = 1;
+  			$quantity = array();
+  			while ($count <= $quantityMax) {
+  				$countVal = ProductPage::getGeneratedValue($data->Code, 'quantity', $count, 'value');
+  				$quantity[$countVal] = $count;
+  				$count++;
+  			}
+        $fields->push(DropdownField::create('quantity', 'Quantity', $quantity));
+      }
 
 			$actions = FieldList::create(
 				$submit = FormAction::create(

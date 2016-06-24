@@ -8,12 +8,14 @@ class FoxyStripeSiteConfig extends DataExtension{
 		'MultiGroup' => 'Boolean',
 		'ProductLimit' => 'Int',
 		'CartValidation' => 'Boolean',
+    'ShowMaxQuantity' => 'Boolean',
 		'MaxQuantity' => 'Int'
 	);
 
     // Set Default values
     private static $defaults = array(
-        'ProductLimit' => 10
+        'ProductLimit' => 10,
+        'ShowMaxQuantity' => true
     );
 
 	public function updateCMSFields(FieldList $fields){
@@ -82,6 +84,12 @@ class FoxyStripeSiteConfig extends DataExtension{
                     'Number of Products to show per page on a Product Group'
                 )),
 			HeaderField::create('ProductQuantityHD', _t('FoxyStripeSiteConfig.ProductQuantityHD', 'Product Form Max Quantity'), 3),
+      CheckboxField::create('ShowMaxQuantity')
+				->setTitle(_t('FoxyStripeSiteConfig.ShowMaxQuantity', 'Show Max Quantity?'))
+				->setDescription(_t(
+                    'FoxyStripeSiteConfig.ShowMaxQuantityDescription',
+                    'Show the max quantity dropdown for each product page'
+                )),
 			NumericField::create('MaxQuantity')
 				->setTitle(_t('FoxyStripeSiteConfig.MaxQuantity', 'Max Quantity'))
 				->setDescription(_t(
