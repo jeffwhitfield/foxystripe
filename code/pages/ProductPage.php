@@ -47,7 +47,7 @@ class ProductPage extends Page implements PermissionProvider {
     );
 
 	private static $defaults = array(
-		'ShowInMenus' => false,
+		'ShowInMenus' => true,
 		'Available' => true,
         'Weight' => '1.0'
 	);
