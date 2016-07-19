@@ -52,7 +52,7 @@ class Order extends DataObject implements PermissionProvider{
     private static $casting = array(
         'ReceiptLink' => 'HTMLVarchar'
     );
-    
+
     private static $indexes = array(
         'Order_ID' => true // make unique
     );
@@ -76,6 +76,18 @@ class Order extends DataObject implements PermissionProvider{
         return $labels;
     }
 
+    public function onBeforeDelete()
+    {
+      parent::onBeforeDelete();
+      $Details = $this->Details();
+      if (!empty($Details)) {
+        foreach ($Details as $Detail) {
+          $Detail->delete();
+        }
+      }
+    }
+
+
     function ReceiptLink() {
         return $this->getReceiptLink();
     }
@@ -96,8 +108,8 @@ class Order extends DataObject implements PermissionProvider{
 	}
 
 	public function canDelete($member = null) {
-        return false;
-        //return Permission::check('Product_ORDERS');
+//        return false;
+        return Permission::check('Product_ORDERS');
 	}
 
 	public function canCreate($member = null) {

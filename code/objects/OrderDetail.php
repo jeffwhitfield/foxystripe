@@ -37,6 +37,17 @@ class OrderDetail extends DataObject {
 		return $fields;
 	}
 
+  public function onBeforeDelete()
+  {
+    parent::onBeforeDelete();
+    $Options = $this->Options();
+    if (!empty($Options)) {
+      foreach ($Options as $Option) {
+        $Option->delete();
+      }
+    }
+  }
+
 	public function validate(){
 		$result = parent::validate();
 
