@@ -441,8 +441,7 @@ JS
   			$quantityMax = ($config->MaxQuantity) ? $config->MaxQuantity : 10;
   			$count = 1;
   			$quantity = array();
-        $quantityCount = ($data->Inventory < $quantityMax) ? $data->Inventory : $quantityMax;
-  			while ($count <= $quantityCount) {
+  			while ($count <= $quantityMax) {
   				$countVal = ProductPage::getGeneratedValue($data->Code, 'quantity', $count, 'value');
   				$quantity[$countVal] = $count;
   				$count++;
