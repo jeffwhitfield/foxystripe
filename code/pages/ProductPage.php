@@ -360,6 +360,89 @@ class ProductPage extends Page implements PermissionProvider {
 		);
 	}
 
+
+  public function PurchaseButton() {
+
+		$config = SiteConfig::current_site_config();
+
+		$assignAvailable = function($self){
+			$self->Available = ($self->getAvailability()) ? true : false;
+		};
+
+		$fields = FieldList::create();
+
+		$data = $this->data();
+		$hiddenTitle = ($data->ReceiptTitle) ? htmlspecialchars($data->ReceiptTitle) : htmlspecialchars($data->Title);
+		$code = $data->Code;
+
+		if($data->Available) {
+			$fields->push(HiddenField::create(ProductPage::getGeneratedValue($code, 'name', $hiddenTitle))->setValue($hiddenTitle));
+			$fields->push(HiddenField::create(ProductPage::getGeneratedValue($code, 'category', $data->Category()->Code))->setValue($data->Category()->Code));
+			$fields->push(HiddenField::create(ProductPage::getGeneratedValue($code, 'code', $data->Code))->setValue($data->Code));
+			$fields->push(HiddenField::create(ProductPage::getGeneratedValue($code, 'product_id', $data->ID))->setValue($data->ID));
+			$fields->push(HiddenField::create(ProductPage::getGeneratedValue($code, 'price', $data->Price))->setValue($data->Price));//can't override id
+			$fields->push(HiddenField::create(ProductPage::getGeneratedValue($code, 'weight', $data->Weight))->setValue($data->Weight));
+			if ($this->DiscountTitle && $this->ProductDiscountTiers()->exists()) {
+				$fields->push(HiddenField::create(ProductPage::getGeneratedValue($code, 'discount_quantity_percentage', $data->getDiscountFieldValue()))->setValue($data->getDiscountFieldValue()));
+			}
+			if ($this->PreviewImage()->Exists()) $fields->push(
+				HiddenField::create(ProductPage::getGeneratedValue($code, 'image', $data->PreviewImage()->PaddedImage(80, 80)->absoluteURL))
+					->setValue($data->PreviewImage()->PaddedImage(80, 80)->absoluteURL)
+			);
+
+			$options = $data->ProductOptions();
+			$groupedOptions = new GroupedList($options);
+			$groupedBy = $groupedOptions->groupBy('ProductOptionGroupID');
+
+			$optionsSet = CompositeField::create();
+
+			foreach($groupedBy as $id => $set){
+				$group = OptionGroup::get()->byID($id);
+				$title = $group->Title;
+				$name = preg_replace('/\s/','_', $title);
+				$set->each($assignAvailable);
+				$disabled = array();
+				$fullOptions = array();
+				foreach($set as $item){
+					$fullOptions[ProductPage::getGeneratedValue($data->Code, $group->Title, $item->getGeneratedValue(), 'value')] = $item->getGeneratedTitle();
+					if(!$item->Availability) array_push($disabled, ProductPage::getGeneratedValue($data->Code, $group->Title, $item->getGeneratedValue(), 'value'));
+				}
+				$optionsSet->push(
+					$dropdown = DropdownField::create($name, $title, $fullOptions)->setTitle($title)
+				);
+				$dropdown->setDisabledItems($disabled);
+			}
+
+			$optionsSet->addExtraClass('foxycartOptionsContainer');
+			$fields->push($optionsSet);
+
+			$actions = FieldList::create(
+				$submit = FormAction::create(
+					'',
+					_t('ProductForm.AddToCart', 'Add to Cart')
+				)
+			);
+			$submit->setAttribute('name', ProductPage::getGeneratedValue($code, 'Submit', _t('ProductForm.AddToCart', 'Add to Cart')));
+			if(!$config->StoreName || $config->StoreName == '' || !isset($config->StoreName)){
+				$submit->setAttribute('Disabled', true);
+			}
+			$this->extend('updatePurchaseFormFields', $fields);
+		}else{
+			$fields->push(HeaderField::create('submitPrice', 'Currently Out of Stock'), 4);
+			$actions = FieldList::create();
+		}
+
+		$form = Form::create($this, 'PurchaseForm', $fields, $actions);
+		$form->setAttribute('action',FoxyCart::FormActionURL());
+		$form->disableSecurityToken();
+
+		$this->extend('updatePurchaseForm', $form);
+
+		return $form;
+	}
+
+
+
 }
 
 class ProductPage_Controller extends Page_Controller {
