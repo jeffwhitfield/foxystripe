@@ -15,7 +15,9 @@ class Order extends DataObject implements PermissionProvider{
     );
 
 	private static $has_one = array(
-        'Member' => 'Member'
+        'Member' => 'Member',
+        'Customer' => 'Customer',
+        'Shipping' => 'Shipping'
     );
 
 	private static $has_many = array(
@@ -30,13 +32,17 @@ class Order extends DataObject implements PermissionProvider{
     private static $summary_fields = array(
         'Order_ID',
         'TransactionDate.NiceUS',
-        'Member.Name',
+        'FullName',
         'ProductTotal.Nice',
         'TaxTotal.Nice',
         'ShippingTotal.Nice',
         'OrderTotal.Nice',
         'ReceiptLink'
     );
+
+    public function getFullName() {
+    	return $this->Customer()->LastName. ", ".$this->Customer()->FirstName;
+    }
 
 	private static $searchable_fields = array(
         'Order_ID',
@@ -84,6 +90,14 @@ class Order extends DataObject implements PermissionProvider{
         foreach ($Details as $Detail) {
           $Detail->delete();
         }
+      }
+      $Customer = $this->Customer();
+      if (!empty($Customer)) {
+        $Customer->delete();
+      }
+      $Shipping = $this->Shipping();
+      if (!empty($Shipping)) {
+        $Shipping->delete();
       }
     }
 

@@ -130,6 +130,42 @@ class FoxyStripe_Controller extends Page_Controller {
                 $transaction->MemberID = $customer->ID;
 
             }
+
+            // Save Customer information
+            if (isset($order->customer_email)) {
+              $customer = Customer::create();
+              $customer->FirstName = (string)$order->customer_first_name;
+              $customer->LastName = (string)$order->customer_last_name;
+              $customer->Company = (string)$order->customer_company;
+              $customer->Phone = (string)$order->customer_phone;
+              $customer->Email = (string)$order->customer_email;
+              $customer->Address = (string)$order->customer_address1;
+              $customer->Address2 = (string)$order->customer_address2;
+              $customer->City = (string)$order->customer_city;
+              $customer->State = (string)$order->customer_state;
+              $customer->Postcode = (string)$order->customer_postal_code;
+              $customer->Country = (string)$order->customer_country;
+              $customer->OrderID = $transaction->ID;
+              $customer->write();
+              $transaction->CustomerID = $customer->ID;
+            }
+            // Save Shipping information
+            if (isset($order->shipping_address1)) {
+              $shipping = Shipping::create();
+              $shipping->FirstName = (string)$order->shipping_first_name;
+              $shipping->LastName = (string)$order->shipping_last_name;
+              $shipping->Company = (string)$order->shipping_company;
+              $shipping->Phone = (string)$order->shipping_phone;
+              $shipping->Address = (string)$order->shipping_address1;
+              $shipping->Address2 = (string)$order->shipping_address2;
+              $shipping->City = (string)$order->shipping_city;
+              $shipping->State = (string)$order->shipping_state;
+              $shipping->Postcode = (string)$order->shipping_postal_code;
+              $shipping->Country = (string)$order->shipping_country;
+              $shipping->OrderID = $transaction->ID;
+              $shipping->write();
+              $transaction->ShippingID = $shipping->ID;
+            }
         }
     }
 
