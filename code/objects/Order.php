@@ -8,6 +8,7 @@ class Order extends DataObject implements PermissionProvider{
         'ProductTotal' => 'Currency',
         'TaxTotal' => 'Currency',
         'ShippingTotal' => 'Currency',
+        'ShippingMethod' => 'Varchar(255)',
         'OrderTotal' => 'Currency',
         'ReceiptURL' => 'Varchar(255)',
         'OrderStatus' => 'Varchar(255)',
@@ -21,7 +22,8 @@ class Order extends DataObject implements PermissionProvider{
     );
 
 	private static $has_many = array(
-        'Details' => 'OrderDetail'
+        'Details' => 'OrderDetail',
+        'CustomFields' => 'OrderCustomField'
     );
 
     private static $singular_name = 'Order';
@@ -98,6 +100,12 @@ class Order extends DataObject implements PermissionProvider{
       $Shipping = $this->Shipping();
       if (!empty($Shipping)) {
         $Shipping->delete();
+      }
+      $CustomFields = $this->CustomFields();
+      if (!empty($CustomFields)) {
+        foreach ($CustomFields as $CustomField) {
+          $CustomField->delete();
+        }
       }
     }
 

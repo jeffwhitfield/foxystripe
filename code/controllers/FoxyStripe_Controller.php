@@ -70,6 +70,7 @@ class FoxyStripe_Controller extends Page_Controller {
 
             $this->parseOrderInfo($orders, $transaction);
             $this->parseOrderCustomer($orders, $transaction);
+            $this->parseOrderCustomFields($orders, $transaction);
             // record transaction so user info can be accessed from parseOrderDetails()
             $transaction->write();
             $this->parseOrderDetails($orders, $transaction);
@@ -89,10 +90,57 @@ class FoxyStripe_Controller extends Page_Controller {
             $transaction->ProductTotal = (float)$order->product_total;
             $transaction->TaxTotal = (float)$order->tax_total;
             $transaction->ShippingTotal = (float)$order->shipping_total;
+            $transaction->ShippingMethod = (string)$order->shipto_shipping_service_description;
             $transaction->OrderTotal = (float)$order->order_total;
             $transaction->ReceiptURL = (string)$order->receipt_url;
             $transaction->OrderStatus = (string)$order->status;
         }
+    }
+
+    public function parseOrderCustomFields($orders, $transaction) {
+
+      foreach ($orders->transactions->transaction as $order) {
+
+        // Loop through all custom fields
+        foreach ($order->custom_fields->custom_field as $field) {
+
+          if(!empty($field->custom_field_value)){
+            $CustomField = OrderCustomField::create();
+
+            // set name and value
+            $CustomField->FieldName = (string)$field->custom_field_name;
+            $CustomField->FieldValue = (string)$field->custom_field_value;
+
+            // associate with this order
+            $CustomField->OrderID = $transaction->ID;
+
+            // write
+            $CustomField->write();
+          }
+
+        }
+
+        // Loop through tax rates and add them in as custom fields
+        foreach ($order->taxes->tax as $tax) {
+
+          if(!empty($tax->tax_rate)){
+            $CustomField = OrderCustomField::create();
+
+            // set name and value
+            $CustomField->FieldName = 'Tax_Rate';
+            $CustomField->FieldValue = (float)$tax->tax_rate;
+
+            // associate with this order
+            $CustomField->OrderID = $transaction->ID;
+
+            // write
+            $CustomField->write();
+          }
+
+        }
+
+      }
+
     }
 
     public function parseOrderCustomer($orders, $transaction) {
