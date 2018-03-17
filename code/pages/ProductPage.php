@@ -390,13 +390,6 @@ class ProductPage extends Page implements PermissionProvider {
 					->setValue($data->PreviewImage()->PaddedImage(80, 80)->absoluteURL)
 			);
 
-			if($data->Price < 200){
-				$shipping = 19.99;
-			} else {
-				$shipping = 49.99;
-			}
-			$fields->push(HiddenField::create(ProductPage::getGeneratedValue($code, 'h:product_shipping', $shipping))->setValue($shipping));
-
 
 			$options = $data->ProductOptions();
 			$groupedOptions = new GroupedList($options);
@@ -501,13 +494,6 @@ JS
 				HiddenField::create(ProductPage::getGeneratedValue($code, 'image', $data->PreviewImage()->PaddedImage(80, 80)->absoluteURL))
 					->setValue($data->PreviewImage()->PaddedImage(80, 80)->absoluteURL)
 			);
-
-			if($data->Price < 200){
-				$shipping = 19.99;
-			} else {
-				$shipping = 49.99;
-			}
-			$fields->push(HiddenField::create(ProductPage::getGeneratedValue($code, 'h:product_shipping', $shipping))->setValue($shipping));
 
 			$options = $data->ProductOptions();
 			$groupedOptions = new GroupedList($options);
