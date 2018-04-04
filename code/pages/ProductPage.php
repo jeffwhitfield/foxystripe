@@ -390,6 +390,7 @@ class ProductPage extends Page implements PermissionProvider {
 					->setValue($data->PreviewImage()->PaddedImage(80, 80)->absoluteURL)
 			);
 
+
 			$options = $data->ProductOptions();
 			$groupedOptions = new GroupedList($options);
 			$groupedBy = $groupedOptions->groupBy('ProductOptionGroupID');
@@ -485,8 +486,8 @@ JS
 			$fields->push(HiddenField::create(ProductPage::getGeneratedValue($code, 'code', $data->Code))->setValue($data->Code));
 			$fields->push(HiddenField::create(ProductPage::getGeneratedValue($code, 'product_id', $data->ID))->setValue($data->ID));
 			$fields->push(HiddenField::create(ProductPage::getGeneratedValue($code, 'price', $data->Price))->setValue($data->Price));//can't override id
-			$fields->push(HiddenField::create(ProductPage::getGeneratedValue($code, 'weight', $data->Weight))->setValue($data->Weight));
 			if ($this->DiscountTitle && $this->ProductDiscountTiers()->exists()) {
+				$fields->push(HiddenField::create(ProductPage::getGeneratedValue($code, 'weight', $data->Weight))->setValue($data->Weight));
 				$fields->push(HiddenField::create(ProductPage::getGeneratedValue($code, 'discount_quantity_percentage', $data->getDiscountFieldValue()))->setValue($data->getDiscountFieldValue()));
 			}
 			if ($this->PreviewImage()->Exists()) $fields->push(
