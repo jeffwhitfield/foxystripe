@@ -1,4 +1,8 @@
 <?php
+use net\authorize\api\contract\v1 as AnetAPI;
+use net\authorize\api\controller as AnetController;
+
+define("AUTHORIZENET_LOG_FILE", "authorizenet.log");
 
 class FoxyStripe_Controller extends Page_Controller {
 
@@ -57,6 +61,15 @@ class FoxyStripe_Controller extends Page_Controller {
             // parse order
             $this->parseOrder($order->id);
 
+			if($order->payment_gateway_type == 'authorize'){
+				$transArr = array();
+				$trans_id = explode(':', $order->processor_response;
+				$transArr['trans_id'] = $trans_id[1];
+				$transArr['trans_name'] = $order->customer_first_name." ".$order->customer_last_name;
+				$transArr['trans_email'] = $order->customer_email;
+				$transArr['trans_customer_id'] = $order->customer_id;
+				$this->createCustomerProfileFromTransaction($transArr);
+			}
         }
     }
 
@@ -319,5 +332,46 @@ class FoxyStripe_Controller extends Page_Controller {
 	    $this->redirect($redirect_complete);
 
     }
+
+
+	public function createCustomerProfileFromTransaction($transaction)
+	{
+		/* Create a merchantAuthenticationType object with authentication details
+		retrieved from the constants file */
+		$merchantAuthentication = new AnetAPI\MerchantAuthenticationType();
+		$merchantAuthentication->setName('2tCA4pydR4y');
+		$merchantAuthentication->setTransactionKey('2D8szwTVb49875ZD');
+
+		// Set the transaction's refId
+		$refId = 'ref' . time();
+
+		$customerProfile = new AnetAPI\CustomerProfileBaseType();
+		$customerProfile->setMerchantCustomerId($transaction['trans_customer_id']);
+		$customerProfile->setEmail($transaction['trans_email']);
+		$customerProfile->setDescription($transaction['trans_name']);
+
+		$request = new AnetAPI\CreateCustomerProfileFromTransactionRequest();
+		$request->setMerchantAuthentication($merchantAuthentication);
+		$request->setTransId($transaction['trans_id']);
+
+		// You can either specify the customer information in form of customerProfileBaseType object
+		$request->setCustomer($customerProfile);
+		//  OR
+		// You can just provide the customer Profile ID
+			//$request->setCustomerProfileId("123343");
+
+		$controller = new AnetController\CreateCustomerProfileFromTransactionController($request);
+
+		$response = $controller->executeWithApiResponse(\net\authorize\api\constants\ANetEnvironment::SANDBOX);
+
+		if (($response != null) && ($response->getMessages()->getResultCode() == "Ok") ) {
+			echo "SUCCESS: PROFILE ID : " . $response->getCustomerProfileId() . "\n";
+		} else {
+			echo "ERROR :  Invalid response\n";
+			$errorMessages = $response->getMessages()->getMessage();
+			echo "Response : " . $errorMessages[0]->getCode() . "  " .$errorMessages[0]->getText() . "\n";
+		}
+		return $response;
+	}
 
 }
