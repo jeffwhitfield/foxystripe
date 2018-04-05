@@ -63,7 +63,7 @@ class FoxyStripe_Controller extends Page_Controller {
 
 			if($order->payment_gateway_type == 'authorize'){
 				$transArr = array();
-				$trans_id = explode(':', $order->processor_response;
+				$trans_id = explode(':', $order->processor_response);
 				$transArr['trans_id'] = $trans_id[1];
 				$transArr['trans_name'] = $order->customer_first_name." ".$order->customer_last_name;
 				$transArr['trans_email'] = $order->customer_email;
