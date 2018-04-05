@@ -339,8 +339,8 @@ class FoxyStripe_Controller extends Page_Controller {
 		/* Create a merchantAuthenticationType object with authentication details
 		retrieved from the constants file */
 		$merchantAuthentication = new AnetAPI\MerchantAuthenticationType();
-		$merchantAuthentication->setName('2tCA4pydR4y');
-		$merchantAuthentication->setTransactionKey('2D8szwTVb49875ZD');
+		$merchantAuthentication->setName('5MW2v8fC');
+		$merchantAuthentication->setTransactionKey('6u78H3Yru99JF5P4');
 
 		// Set the transaction's refId
 		$refId = 'ref' . time();
