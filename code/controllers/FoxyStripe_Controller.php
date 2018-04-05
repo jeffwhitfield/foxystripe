@@ -365,11 +365,13 @@ class FoxyStripe_Controller extends Page_Controller {
 		$response = $controller->executeWithApiResponse(\net\authorize\api\constants\ANetEnvironment::SANDBOX);
 
 		if (($response != null) && ($response->getMessages()->getResultCode() == "Ok") ) {
-			echo "SUCCESS: PROFILE ID : " . $response->getCustomerProfileId() . "\n";
+//			echo "SUCCESS: PROFILE ID : " . $response->getCustomerProfileId() . "\n";
+			$response = true;
 		} else {
-			echo "ERROR :  Invalid response\n";
-			$errorMessages = $response->getMessages()->getMessage();
-			echo "Response : " . $errorMessages[0]->getCode() . "  " .$errorMessages[0]->getText() . "\n";
+//			echo "ERROR :  Invalid response\n";
+//			$errorMessages = $response->getMessages()->getMessage();
+//			echo "Response : " . $errorMessages[0]->getCode() . "  " .$errorMessages[0]->getText() . "\n";
+			$response = false;
 		}
 		return $response;
 	}
