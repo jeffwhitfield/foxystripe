@@ -53,9 +53,10 @@ class ProductPage extends Page implements PermissionProvider {
 	);
 
     private static $summary_fields = array(
+		'Parent.Title',
         'Title',
         'Code',
-        'Price.Nice',
+		'Inventory',
         'Category.Title'
     );
 
@@ -67,9 +68,12 @@ class ProductPage extends Page implements PermissionProvider {
         'Category.ID'
     );
 
+	private static $default_sort = 'ParentID ASC, ID ASC';
+
     function fieldLabels($includerelations = true) {
         $labels = parent::fieldLabels();
 
+        $labels['Parent.Title'] = _t('ProductPage.FamilyLabel', 'Family');
         $labels['Title'] = _t('ProductPage.TitleLabel', 'Name');
         $labels['Code'] = _t('ProductPage.CodeLabel', "Code");
         $labels['Price.Nice'] = _t('ProductPage.PriceLabel', 'Price');
@@ -136,6 +140,8 @@ class ProductPage extends Page implements PermissionProvider {
             $products,
             $config
         );
+
+		$fields->addFieldToTab("Root.Main", LiteralField::create('Family', '<p>Family: <strong>' . $this->Parent()->Title . '</strong></p>'), 'Title');
 
 		// Details tab
 		$fields->addFieldsToTab('Root.Details', array(
