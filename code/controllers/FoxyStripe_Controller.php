@@ -52,7 +52,7 @@ class FoxyStripe_Controller extends Page_Controller {
             }
 
             // save base order info
-            $transaction->Order_ID = (int) $order->id;
+            $transaction->Order_ID = (string) $order->id;
             $transaction->Response = $decrypted;
 
             // record transaction as order
@@ -107,6 +107,7 @@ class FoxyStripe_Controller extends Page_Controller {
             $transaction->OrderTotal = (float)$order->order_total;
             $transaction->ReceiptURL = (string)$order->receipt_url;
             $transaction->OrderStatus = (string)$order->status;
+			$transaction->Order_ID = $this->getStoreID($transaction->ReceiptURL).'-'.$transaction->Order_ID;
         }
     }
 
@@ -375,5 +376,11 @@ class FoxyStripe_Controller extends Page_Controller {
 		}
 		return $response;
 	}
+
+    public function getStoreID($ReceiptURL) {
+		$url = parse_url($ReceiptURL);
+		$host = explode('.', $url['host']);
+        return $host[0];
+    }
 
 }

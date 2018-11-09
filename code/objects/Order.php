@@ -3,7 +3,7 @@
 class Order extends DataObject implements PermissionProvider{
 
 	private static $db = array(
-        'Order_ID' => 'Int',
+        'Order_ID' => 'Varchar(255)',
         'TransactionDate' => 'SS_Datetime',
         'ProductTotal' => 'Currency',
         'TaxTotal' => 'Currency',
