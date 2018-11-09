@@ -380,7 +380,19 @@ class FoxyStripe_Controller extends Page_Controller {
     public function getStoreID($ReceiptURL) {
 		$url = parse_url($ReceiptURL);
 		$host = explode('.', $url['host']);
-        return $host[0];
+		switch ($host[0]) {
+			case 'oxfordbabyandkids':
+				return 1;
+				break;
+
+			case 'ozlobaby':
+				return 2;
+				break;
+
+			default:
+				return 0;
+				break;
+		}
     }
 
 }
