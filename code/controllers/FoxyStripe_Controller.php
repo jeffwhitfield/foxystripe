@@ -107,7 +107,7 @@ class FoxyStripe_Controller extends Page_Controller {
             $transaction->OrderTotal = (float)$order->order_total;
             $transaction->ReceiptURL = (string)$order->receipt_url;
             $transaction->OrderStatus = (string)$order->status;
-			$transaction->Order_ID = $this->getStoreID($transaction->ReceiptURL).'-'.$transaction->Order_ID;
+			$transaction->Order_ID = $this->getStoreID($transaction->ReceiptURL).$transaction->Order_ID;
         }
     }
 
