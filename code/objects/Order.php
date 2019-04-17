@@ -12,6 +12,7 @@ class Order extends DataObject implements PermissionProvider{
         'OrderTotal' => 'Currency',
         'ReceiptURL' => 'Varchar(255)',
         'OrderStatus' => 'Varchar(255)',
+        'RequestID' => 'Varchar(255)',
         'Response' => 'Text'
     );
 
