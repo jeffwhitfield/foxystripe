@@ -96,7 +96,8 @@ class FoxyStripe_Controller extends Page_Controller {
     public function parseOrderInfo($orders, $transaction) {
 
         foreach ($orders->transactions->transaction as $order) {
-
+			$prArray = explode(':', $order->processor_response);
+			$requestID = trim($prArray[1]);
             // Record transaction data from FoxyCart Datafeed:
             $transaction->Store_ID = (int)$order->store_id;
             $transaction->TransactionDate = (string)$order->transaction_date;
@@ -107,7 +108,7 @@ class FoxyStripe_Controller extends Page_Controller {
             $transaction->OrderTotal = (float)$order->order_total;
             $transaction->ReceiptURL = (string)$order->receipt_url;
             $transaction->OrderStatus = (string)$order->status;
-            $transaction->RequestID = (string)$order->processor_response;
+            $transaction->RequestID = (string)$requestID;
 			$transaction->Order_ID = $this->getStoreID($transaction->ReceiptURL).$transaction->Order_ID;
         }
     }
