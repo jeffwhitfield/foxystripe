@@ -13,8 +13,13 @@ class Order extends DataObject implements PermissionProvider{
         'ReceiptURL' => 'Varchar(255)',
         'OrderStatus' => 'Varchar(255)',
         'RequestID' => 'Varchar(255)',
-        'Response' => 'Text'
+        'Response' => 'Text',
+        'Currency' => 'Varchar(255)'
     );
+
+	private static $defaults = array(
+		'Currency' => 'USD'
+	);
 
 	private static $has_one = array(
         'Member' => 'Member',
