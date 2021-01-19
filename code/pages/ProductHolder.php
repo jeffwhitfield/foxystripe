@@ -6,13 +6,13 @@
  */
 
 class ProductHolder extends Page {
-	
+
 	private static $allowed_children = array('ProductHolder', 'ProductPage');
-	
+
 	private static $db = array(
-		
+
 	);
-	
+
 	private static $has_one = array(
 
 	);
@@ -27,14 +27,14 @@ class ProductHolder extends Page {
 		)
 	);
 
-    private static $singular_name = 'Product Group';
-    private static $plural_name = 'Product Groups';
-    private static $description = 'Display a list of related products';
-	
+    private static $singular_name = 'Product Collection';
+    private static $plural_name = 'Product Collections';
+    private static $description = 'Display a collection of related products';
+
 	private static $defaults = array(
-		
+
 	);
-	
+
 	public function getCMSFields(){
 		$fields = parent::getCMSFields();
 
@@ -69,7 +69,7 @@ class ProductHolder extends Page {
 
 	/**
 	 * loadDescendantProductGroupIDListInto function.
-	 * 
+	 *
 	 * @access public
 	 * @param mixed &$idList
 	 * @return void
@@ -78,18 +78,18 @@ class ProductHolder extends Page {
 		if ($children = $this->AllChildren()) {
 			foreach($children as $child) {
 				if(in_array($child->ID, $idList)) continue;
-				
+
 				if($child instanceof ProductHolder) {
-					$idList[] = $child->ID; 
+					$idList[] = $child->ID;
 					$child->loadDescendantProductGroupIDListInto($idList);
-				}                             
+				}
 			}
 		}
 	}
-	
+
 	/**
 	 * ProductGroupIDs function.
-	 * 
+	 *
 	 * @access public
 	 * @return array
 	 */
@@ -98,10 +98,10 @@ class ProductHolder extends Page {
 		$this->loadDescendantProductGroupIDListInto($holderIDs);
 		return $holderIDs;
 	}
-	
+
 	/**
 	 * Products function.
-	 * 
+	 *
 	 * @access public
 	 * @return array
 	 */
@@ -137,12 +137,12 @@ class ProductHolder extends Page {
     	$list = new PaginatedList($entries, Controller::curr()->request);
     	$list->setPageLength($limit);
     	return $list;
-		
+
 	}
 }
 
 class ProductHolder_Controller extends Page_Controller {
-	
+
 	public function init(){
 		parent::init();
 
